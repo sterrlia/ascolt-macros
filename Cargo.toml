@@ -11,7 +11,7 @@ keywords = [
     "macro",
     "procedural"
 ]
-categories = ["development-tools::procedural-macro"]
+categories = []
 license-file = "LICENSE"
 rust-version = "1.85.1"
 
