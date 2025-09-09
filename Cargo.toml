@@ -1,0 +1,25 @@
+[package]
+name = "ascolt-macros"
+version = "0.1.0"
+edition = "2024"
+description = "Macros for ascolt actor library"
+repository = "https://github.com/sterrlia/ascolt"
+keywords = [
+    "actor",
+    "async",
+    "actor-model",
+    "syn", 
+    "macro", 
+    "procedural"
+]
+categories = ["development-tools::procedural-macro"]
+license-file = "LICENSE"
+rust-version = "1.85.1"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "2.0", features = ["full"] }
