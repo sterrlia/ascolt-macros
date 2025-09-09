@@ -1,5 +1,3 @@
-## Macros for ascolt crate
-
 [![crates.io version](https://img.shields.io/crates/v/ascolt.svg)](https://crates.io/crates/ascolt-macros)
 [![docs.rs docs](https://docs.rs/ascolt-macros/badge.svg)](https://docs.rs/ascolt-macros)
 [![CI build](https://github.com/sterrlia/ascolt-macros/actions/workflows/rust.yml/badge.svg)](https://github.com/sterrlia/ascolt-macros/actions)
