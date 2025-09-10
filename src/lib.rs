@@ -45,7 +45,7 @@ pub fn ask_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
 
     let expanded = quote! {
         #[async_trait::async_trait]
-        impl AskHandlerTrait<#clean_state_ty, #clean_msg_ty, #resp_ty, #err_ty> for #clean_actor_ty {
+        impl ascolt::handler::AskHandlerTrait<#clean_state_ty, #clean_msg_ty, #resp_ty, #err_ty> for #clean_actor_ty {
             async fn #fn_name(
                 self: #actor_ty,
                 state: #state_ty,
@@ -102,7 +102,7 @@ pub fn tell_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
 
     let expanded = quote! {
         #[async_trait::async_trait]
-        impl TellHandlerTrait<#clean_state_ty, #clean_msg_ty, #err_ty> for #clean_actor_ty {
+        impl ascolt::handler::TellHandlerTrait<#clean_state_ty, #clean_msg_ty, #err_ty> for #clean_actor_ty {
             async fn #fn_name(
                 self: #actor_ty,
                 state: #state_ty,
