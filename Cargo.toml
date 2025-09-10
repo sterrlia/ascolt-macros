@@ -1,6 +1,6 @@
 [package]
 name = "ascolt-macros"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Macros for ascolt actor library"
 repository = "https://github.com/sterrlia/ascolt"
