@@ -14,7 +14,6 @@ pub fn ask_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
     let output = &sig.output;
 
     let mut actor_ty = None;
-    let mut state_ty = None;
     let mut msg_ty = None;
 
     for arg in inputs {
@@ -23,10 +22,8 @@ pub fn ask_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
             FnArg::Typed(PatType { pat, ty, .. }) => {
                 if let Pat::Ident(pat_ident) = pat.as_ref() {
                     let ident = pat_ident.ident.to_string();
-                    match ident.as_str() {
-                        "state" => state_ty = Some(ty.clone()),
-                        "msg" => msg_ty = Some(ty.clone()),
-                        _ => {}
+                    if ident.as_str() == "msg" {
+                        msg_ty = Some(ty.clone())
                     }
                 }
             }
@@ -34,21 +31,18 @@ pub fn ask_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
     }
 
     let actor_ty = actor_ty.expect("Missing self: &Actor argument");
-    let state_ty = state_ty.expect("Missing state argument");
     let msg_ty = msg_ty.expect("Missing msg argument");
 
     let clean_actor_ty = strip_reference(&actor_ty);
-    let clean_state_ty = strip_reference(&state_ty);
     let clean_msg_ty = strip_reference(&msg_ty);
 
     let (resp_ty, err_ty) = extract_result_types(output);
 
     let expanded = quote! {
         #[async_trait::async_trait]
-        impl ascolt::handler::AskHandlerTrait<#clean_state_ty, #clean_msg_ty, #resp_ty, #err_ty> for #clean_actor_ty {
+        impl ascolt::handler::AskHandlerTrait<#clean_msg_ty, #resp_ty, #err_ty> for #clean_actor_ty {
             async fn #fn_name(
                 self: #actor_ty,
-                state: #state_ty,
                 msg: #msg_ty,
             ) -> Result<#resp_ty, #err_ty> {
                 #block
@@ -71,7 +65,6 @@ pub fn tell_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
     let output = &sig.output;
 
     let mut actor_ty = None;
-    let mut state_ty = None;
     let mut msg_ty = None;
 
     for arg in inputs {
@@ -80,10 +73,8 @@ pub fn tell_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
             FnArg::Typed(PatType { pat, ty, .. }) => {
                 if let Pat::Ident(pat_ident) = pat.as_ref() {
                     let ident = pat_ident.ident.to_string();
-                    match ident.as_str() {
-                        "state" => state_ty = Some(ty.clone()),
-                        "msg" => msg_ty = Some(ty.clone()),
-                        _ => {}
+                    if ident.as_str() == "msg" {
+                        msg_ty = Some(ty.clone())
                     }
                 }
             }
@@ -91,21 +82,18 @@ pub fn tell_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
     }
 
     let actor_ty = actor_ty.expect("Missing self: &Actor argument");
-    let state_ty = state_ty.expect("Missing state argument");
     let msg_ty = msg_ty.expect("Missing msg argument");
 
     let clean_actor_ty = strip_reference(&actor_ty);
-    let clean_state_ty = strip_reference(&state_ty);
     let clean_msg_ty = strip_reference(&msg_ty);
 
     let (_, err_ty) = extract_result_types(output);
 
     let expanded = quote! {
         #[async_trait::async_trait]
-        impl ascolt::handler::TellHandlerTrait<#clean_state_ty, #clean_msg_ty, #err_ty> for #clean_actor_ty {
+        impl ascolt::handler::TellHandlerTrait<#clean_msg_ty, #err_ty> for #clean_actor_ty {
             async fn #fn_name(
                 self: #actor_ty,
-                state: #state_ty,
                 msg: #msg_ty,
             ) -> Result<(), #err_ty> {
                 #block
