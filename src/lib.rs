@@ -1,6 +1,8 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{FnArg, ItemFn, Pat, PatType, PathArguments, ReturnType, Type, parse_macro_input};
+use syn::{
+    DeriveInput, FnArg, ItemFn, Pat, PatType, PathArguments, ReturnType, Type, parse_macro_input,
+};
 
 #[proc_macro_attribute]
 pub fn ask_handler(_args: TokenStream, item: TokenStream) -> TokenStream {
@@ -148,4 +150,32 @@ fn extract_result_types(
         }
         _ => panic!("Expected function to have a return type"),
     }
+}
+
+#[proc_macro_derive(Actor, attributes(actor))]
+pub fn derive_actor(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = input.ident;
+
+    let mut error_ty = None;
+    for attr in input.attrs.iter().filter(|a| a.path().is_ident("actor")) {
+        attr.parse_nested_meta(|meta| {
+            if meta.path.is_ident("error") {
+                let value: syn::Type = meta.value()?.parse()?;
+                error_ty = Some(value);
+                Ok(())
+            } else {
+                Err(meta.error("unsupported attribute"))
+            }
+        })
+        .unwrap();
+    }
+
+    let error_ty = error_ty.expect("missing #[actor(error = ...)]");
+
+    let expanded = quote! {
+        impl ActorTrait<#error_ty> for #name {}
+    };
+
+    TokenStream::from(expanded)
 }
