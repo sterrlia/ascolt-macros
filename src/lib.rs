@@ -174,7 +174,7 @@ pub fn derive_actor(input: TokenStream) -> TokenStream {
     let error_ty = error_ty.expect("missing #[actor(error = ...)]");
 
     let expanded = quote! {
-        impl ActorTrait<#error_ty> for #name {}
+        impl ascolt::ActorTrait<#error_ty> for #name {}
     };
 
     TokenStream::from(expanded)
